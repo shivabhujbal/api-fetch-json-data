@@ -11,10 +11,16 @@
 <body>
     <div class="headered">
         <h1>Welcome to Shoppers</h1>
-        <button id="men-button" class="btn btn-secondary">Men</button>
-        <button id="women-button" class="btn btn-secondary">Women</button>
-        <button id="kids-button" class="btn btn-secondary">Kids</button>
-       
+        <div class="header-flex">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="to Search type here..." class="form-control">
+            </div>
+            <div class="button-container">
+                <button id="men-button" class="btn btn-secondary">Men</button>
+                <button id="women-button" class="btn btn-secondary">Women</button>
+                <button id="kids-button" class="btn btn-secondary">Kids</button>
+            </div>
+        </div>
     </div>
     <div id="product-list" class="containered"></div>
     <div class="headered"><p>
