@@ -1,97 +1,141 @@
 const API_URL = 'https://cdn.shopify.com/s/files/1/0564/3685/0790/files/multiProduct.json';
+let categories = []; 
+let wishlist = [];
 
-const fetchData = async()=>{
-
-    try{
+const fetchData = async () => {
+    try {
         const res = await fetch(API_URL);
-        // console.log(res);
         const data = await res.json();
-        // console.log(data.categories);
-        displayProducts(data.categories);
+        categories = data.categories; // Set global categories
+        displayProducts(categories);
 
-        document.getElementById('men-button').addEventListener('click',()=>displayFilteredProducts(data.categories,'Men'));
-        document.getElementById('women-button').addEventListener('click',()=>displayFilteredProducts(data.categories,'Women'));
-        document.getElementById('kids-button').addEventListener('click',()=>displayFilteredProducts(data.categories,'Kids'));
-        document.getElementById('search-input').addEventListener('input',() => searchProducts(data.categories));
-
-    }catch(err){
-        console.error("Error with fetching Api",err);
+        document.getElementById('men-button').addEventListener('click', () => displayFilteredProducts('Men'));
+        document.getElementById('women-button').addEventListener('click', () => displayFilteredProducts('Women'));
+        document.getElementById('kids-button').addEventListener('click', () => displayFilteredProducts('Kids'));
+        document.getElementById('search-input').addEventListener('input', () => displayFilteredProducts());
+        document.getElementById('wishlist-items-button').addEventListener('click', () => showWishlistedItems());
+    } catch (err) {
+        console.error("Error with fetching Api", err);
     }
 }
 
-function displayProducts(categories){
+function displayProducts(categories, isWishlistedView = false) {
     const productList = document.getElementById('product-list');
-    productList.innerHTML='';
-    categories.forEach(
-        category => {
-            category.category_products.forEach(
-                product =>{
-                    const productItem = document.createElement('div');
-                    productItem.innerHTML = `
-                    <div class="product-details">
-                    <h3 class="mt-4">${product.title}</h3>
-                        <div class="product-images">
-                            <img src="${product.image}" alt="${product.title}" width="100">
-                            <img src="${product.second_image}" alt="${product.title}" width="100">
-                        </div>
-                        <p class="price">Price: ${product.price}</p>
-                        <p class="compare-price">Compare at price: ${product.compare_at_price}</p>
-                        <p class="vendor">Vendor: ${product.vendor}</p>
-                        <p class="badge-text">${product.badge_text}</p>
-                </div>
-
-                <div class="buy">
-                    <button class="btn "><b>Buy Now<b/></button>
-
-                </div>
-                
-            `;
-
-                productList.appendChild(productItem);
-                }
-            )
-
-
-        }
-    )
-}
-
-function displayFilteredProducts(cate,categoryName){
-    // console.log(cate,categoryName);
-    const filterdProducts = cate.filter(
-        cate => cate.category_name === categoryName
-    );
-    // console.log(filterdProducts);
-    displayProducts(filterdProducts)
-}
-
-function searchProducts(categories){
-
-    const query = document.getElementById('search-input').value.toLowerCase();
-    const filterdProducts =[];
-
-    categories.forEach(
-        category => {
-            const machingProducts = category.category_products.filter(
-                product =>
-                    (product.title?.toLowerCase().includes(query)) ||
-                    (product.vendor?.toLowerCase().includes(query)) ||
-                    (product.price?.toLowerCase().includes(query)) ||
-                    (product.badge_text?.toLowerCase().includes(query))
-
-
-            );
-            if (machingProducts.length) {
-                filterdProducts.push({
-                    category_name:category.category_name,
-                    category_products:machingProducts
-                });
-                
-            }
+    productList.innerHTML = '';
+    categories.forEach(category => {
+        category.category_products.forEach(product => {
+            const productItem = createProductElement(product, isWishlistedView);
+            productList.appendChild(productItem);
         });
-
-        displayProducts(filterdProducts)
+    });
 }
 
+function createProductElement(product, isWishlistedView = false) {
+    const productItem = document.createElement('div');
+    productItem.innerHTML = `
+        <div class="product-details">
+            <h3 class="mt-4">${product.title}</h3>
+            <div class="product-images">
+                <img src="${product.image}" alt="${product.title}" width="100">
+                <img src="${product.second_image}" alt="${product.title}" width="100">
+            </div>
+            <p class="price">Price: ${product.price}</p>
+            <p class="compare-price">Compare at price: ${product.compare_at_price}</p>
+            <p class="vendor">${product.vendor}</p>
+            <p class="badge-text">${product.badge_text}</p>
+        </div>
+        <div class="buy">
+            <button class="btn btn-info add-to-cart">Buy Now</button>
+            <button class="btn  ${isWishlistedView ? 'remove-from-wishlist btn-danger' : 'add-to-wishlist btn-secondary'}" data-product-id="${product.id}">
+                ${isWishlistedView ? 'Remove' : 'Wishlist'}
+            </button>
+        </div>
+    `;
+
+    const button = productItem.querySelector(`.${isWishlistedView ? 'remove-from-wishlist' : 'add-to-wishlist'}`);
+    if (isWishlistedView) {
+        button.addEventListener('click', () => removeFromWishlist(product));
+    } else {
+        if (isInWishlist(product)) {
+            button.disabled = true;
+        } else {
+            button.addEventListener('click', () => addToWishlist(product));
+        }
+    }
+
+    return productItem;
+}
+
+function addToWishlist(product) {
+    wishlist.push(product);
+    updateProductButtons(product);
+}
+
+function removeFromWishlist(product) {
+    wishlist = wishlist.filter(item => item.id !== product.id);
+    showWishlistedItems();
+}
+
+function isInWishlist(product) {
+    return wishlist.some(item => item.id === product.id);
+}
+
+function updateProductButtons(product) {
+    const addToWishlistBtns = document.querySelectorAll('.add-to-wishlist');
+    addToWishlistBtns.forEach(btn => {
+        const productId = btn.getAttribute('data-product-id');
+        if (productId === product.id.toString()) {
+            btn.disabled = isInWishlist(product);
+        }
+    });
+
+    const removeFromWishlistBtns = document.querySelectorAll('.remove-from-wishlist');
+    removeFromWishlistBtns.forEach(btn => {
+        const productId = btn.getAttribute('data-product-id');
+        if (productId === product.id.toString()) {
+            btn.disabled = !isInWishlist(product);
+        }
+    });
+}
+
+function showWishlistedItems() {
+    const productList = document.getElementById('product-list');
+    if (wishlist.length === 0) {
+        productList.innerHTML =
+         '<div><h5>Wishlist your fav products !!</h5><p>your wishlist is Empty :(</p></div>';
+    } else {
+        const filteredWishlist = {
+            category_name: 'Wishlisted Items',
+            category_products: wishlist.slice() 
+        };
+
+        displayProducts([filteredWishlist], true);
+    }
+}
+
+function displayFilteredProducts(categoryName = null) {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const filteredCategories = [];
+
+    categories.forEach(category => {
+        if (!categoryName || category.category_name === categoryName) {
+            const matchingProducts = category.category_products.filter(product =>
+                (product.title?.toLowerCase().includes(query)) ||
+                (product.vendor?.toLowerCase().includes(query)) ||
+                (product.price?.toString().toLowerCase().includes(query)) ||
+                (product.compare_at_price?.toString().toLowerCase().includes(query)) ||
+                (product.badge_text?.toLowerCase().includes(query))
+            );
+            if (matchingProducts.length) {
+                filteredCategories.push({
+                    category_name: category.category_name,
+                    category_products: matchingProducts
+                });
+            }
+        }
+    });
+
+    displayProducts(filteredCategories);
+}
 
 fetchData();

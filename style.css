@@ -11,6 +11,21 @@ body {
   background-color: rgb(71, 73, 71);
 }
 
+#wishlist-items-button{
+  margin-right: 50px;
+}
+.footer{
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+  padding: 5px 0;
+  text-align: center;
+  margin-top: 10px;
+
+}
+
 .header-flex {
   display: flex;
   justify-content: space-between;
@@ -25,7 +40,7 @@ body {
 
 .button-container {
   display: flex;
-  gap: 10px; /* Add space between buttons */
+  gap: 10px; 
   padding-right: 50px;
 }
 
@@ -34,6 +49,7 @@ body {
   max-height: fit-content;
   align-self: center;
   padding: 30px;
+  margin-bottom: 25px;
 }
 
 #product-list {
@@ -64,7 +80,7 @@ body {
 }
 
 .product-details {
-  flex: 1; /* Take remaining space */
+  flex: 1; 
   text-align: center;
   width: 100%;
   height: 400px;
@@ -76,62 +92,59 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-shrink: 0; /* Prevent images from shrinking */
-  margin-right: 20px; /* Adjust as needed */
+  flex-shrink: 0; 
+  margin-right: 20px;
 }
 
 .product-images img {
-  margin-right: 10px; /* Adjust spacing between images */
+  margin-right: 10px;
   border-radius: 5px;
 }
 
 .buy {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px; /* Add some space below the buy button */
+  margin-bottom: 20px; 
 }
 
 
 .price {
   font-size: 1.2em;
-  color: #d9534f; /* Bootstrap's danger color */
+  color: #d9534f; 
   font-weight: bold;
 }
 
 .compare-price {
   font-size: 1em;
-  color: #6c757d; /* Bootstrap's secondary color */
+  color: #6c757d; 
   text-decoration: line-through;
 }
 
 .vendor {
   font-size: 0.9em;
-  color: #5a6268; /* Bootstrap's secondary color */
+  color: #5a6268; 
   margin-top: 10px;
 }
 
 .badge-text {
   font-size: 0.8em;
-  color: #28a745; /* Bootstrap's success color */
+  color: #28a745; 
   font-weight: bold;
   margin-top: 5px;
 }
 
 .buy {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  
+  margin: 5px;
+   
 }
 
 .buy button {
-  font-size: 1em;
-  padding: 10px 20px;
-  background-color: rgb(71, 73, 71);
+  font-size: 0.9em;
+  margin: 10px;
   color: #fff;
 }
 
 .buy button:hover{
-  background-color: rgb(126, 131, 126);
+  background-color: rgb(233, 89, 46);
 
 }
